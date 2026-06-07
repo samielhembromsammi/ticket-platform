@@ -16,7 +16,7 @@ const useApi: AxiosInstance = axios.create({
 });
 useApi.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-    const token = Cookies.get("token");
+    const token = Cookies.get("token") || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
     // console.log("Request Interceptor - Token Found:", token);
 
     if (token) {

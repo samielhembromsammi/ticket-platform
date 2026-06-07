@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuthService } from '@/src/hooks/auth';
 import AuthLayout from '..';
 import Cookies from 'js-cookie';
+import { useAuthStore } from '@/src/store/authStore';
 export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
 
@@ -15,6 +16,7 @@ export default function EmailVerificationPage() {
     const [loading, setLoading] = useState(false);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
     const { verifyUserEmail, resendOtp } = useAuthService();
+    const { setUser } = useAuthStore();
     const router = useRouter();
     const email = Cookies.get('email') || '';
 
@@ -69,28 +71,29 @@ export default function EmailVerificationPage() {
             return;
         }
 
-        if (!email) {
-            message.error("Email is required");
-            return;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!emailRegex.test(email)) {
-            message.error("Invalid email format");
-            return;
-        }
-
         try {
             setLoading(true);
             const res = await verifyUserEmail({
                 otp: otpString
             });
 
-            if (res?.statusCode === 201) {
-                router.push(
-                    `/auth/reset-password?email=${encodeURIComponent(email)}`
-                );
+            if (res?.success || res?.statusCode === 201 || res?.statusCode === 200) {
+                const token = res?.data?.token || res?.data?.results?.token;
+                const user = res?.data?.user || res?.data?.results?.user;
+
+                if (token) {
+                    Cookies.set("token", token, {
+                        secure: process.env.NODE_ENV === "production",
+                        sameSite: "lax",
+                    });
+                    localStorage.setItem("token", token);
+                }
+
+                if (user) {
+                    setUser(user);
+                }
+
+                router.push('/');
             }
 
         } catch (error) {

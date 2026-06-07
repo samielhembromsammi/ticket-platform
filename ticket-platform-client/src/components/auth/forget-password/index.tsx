@@ -17,6 +17,7 @@ export default function ForgetPasswordPage() {
 
     const handleSubmit = async (values: { email: string }) => {
         Cookies.remove("token");
+        localStorage.removeItem("token");
         setLoading(true);
         const res = await forgotPassword({ email: values.email })
         console.log("ressssssss", res);
@@ -26,7 +27,10 @@ export default function ForgetPasswordPage() {
         } else {
             router.push(`/auth/otp-verify?email=${encodeURIComponent(values.email)}`)
             setLoading(false);
-            Cookies.set("token", res?.data?.token);
+            if (res?.data?.token) {
+                Cookies.set("token", res?.data?.token);
+                localStorage.setItem("token", res?.data?.token);
+            }
             Cookies.set("email", values.email);
         }
     };

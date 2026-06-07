@@ -25,11 +25,14 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
-      isAuthenticated: !!Cookies.get("token"),
+      isAuthenticated: !!Cookies.get("token") || (typeof window !== "undefined" ? !!localStorage.getItem("token") : false),
       setUser: (user) => set({ user, isAuthenticated: !!user }),
       logout: () => {
         Cookies.remove("token");
         Cookies.remove("refreshToken");
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("token");
+        }
         set({ user: null, isAuthenticated: false });
         window.location.href = "/auth/login";
       },

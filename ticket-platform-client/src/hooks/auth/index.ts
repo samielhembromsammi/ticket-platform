@@ -146,7 +146,7 @@ export function useAuthService() {
     setLoading(true);
 
     try {
-      const token = Cookies.get("token");
+      const token = Cookies.get("token") || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
 
       if (!token) {
         message.error("Token not found");
@@ -191,12 +191,13 @@ export function useAuthService() {
       setLoading(false);
     }
   }, []);
+
   /** 🔹 email Verification */
   const verifyUserEmail = useCallback(async (payload: VerifyUserEmailPayload) => {
     setLoading(true);
 
     try {
-      const token = Cookies.get("token");
+      const token = Cookies.get("token") || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
 
       if (!token) {
         message.error("Token not found");
@@ -204,7 +205,7 @@ export function useAuthService() {
       }
 
       const response = await useApi.post(
-        "/auth/otp-verify",
+        "/auth/verify-otp",
         payload,
         {
           headers: {
@@ -270,7 +271,7 @@ export function useAuthService() {
   const resetPassword = useCallback(async (payload: ResetPasswordPayload) => {
     setLoading(true);
     try {
-      const token = Cookies.get("token");
+      const token = Cookies.get("token") || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
 
       if (!token) {
         message.error("Token not found");
@@ -317,8 +318,11 @@ export function useAuthService() {
   }, []);
 
   const logoutUser = () => {
-    // Remove token cookie
+    // Remove token cookie and localStorage
     Cookies.remove("token");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("token");
+    }
     message.success("User Logout Successfully")
     // Redirect to login
     router.push("/auth/login");

@@ -21,7 +21,7 @@ export default function LoginPage() {
         try {
             const res = await login({ ...values, remember });
 
-            if (res?.success || res?.statusCode === 200) {
+            if (res?.success || res?.statusCode === 200 || res?.statusCode === 201) {
                 const token = res?.data?.token || res?.data?.tokens?.accessToken;
                 const user = res?.data?.results || res?.data?.user;
 
@@ -31,6 +31,7 @@ export default function LoginPage() {
                         secure: process.env.NODE_ENV === "production",
                         sameSite: "lax",
                     });
+                    localStorage.setItem("token", token);
                 }
 
                 if (user) {
