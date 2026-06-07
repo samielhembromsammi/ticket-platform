@@ -14,6 +14,44 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const removeBis = (el) => {
+                  if (el.removeAttribute) el.removeAttribute('bis_skin_checked');
+                };
+                const clean = (node) => {
+                  removeBis(node);
+                  if (node.querySelectorAll) {
+                    node.querySelectorAll('[bis_skin_checked]').forEach(removeBis);
+                  }
+                };
+                if (typeof document !== 'undefined') {
+                  clean(document.documentElement);
+                  const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((m) => {
+                      m.addedNodes.forEach((node) => {
+                        if (node.nodeType === 1) clean(node);
+                      });
+                      if (m.type === 'attributes' && m.attributeName === 'bis_skin_checked') {
+                        removeBis(m.target);
+                      }
+                    });
+                  });
+                  observer.observe(document.documentElement, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: ['bis_skin_checked']
+                  });
+                }
+              })();
+            `
+          }}
+        />
+      </head>
       <body
         className={`antialiased min-h-screen flex flex-col`}
         suppressHydrationWarning
