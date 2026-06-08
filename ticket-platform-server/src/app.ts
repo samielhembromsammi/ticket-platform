@@ -12,6 +12,8 @@ import cookieParser from "cookie-parser";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
 import logger, { logHttpRequests } from "./logger/logger";
+import passport from "passport";
+import "./config/passport";
 import notFound from "./middlewares/notFound";
 import globalErrorHandler from "./middlewares/globalErrorHandler";
 dotenv.config();
@@ -49,7 +51,7 @@ app.use(express.json({ limit: "10mb" })); // Explicit limit
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 app.use(express.static("public"));
-app.use(logHttpRequests); // High-performance Pino logging
+app.use(passport.initialize());
 
 // ------------------ Routes ------------------
 app.use("/api/v1", router);

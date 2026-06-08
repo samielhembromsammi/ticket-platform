@@ -13,6 +13,8 @@ import {
 } from "./../send-email/sendEmailService";
 import bcrypt from "bcryptjs";
 import { TempUser } from "./../temp_user/temp.user.model";
+import * as crypto from "crypto";
+
 
 const userRegister = async (payload: IUser) => {
   const { email } = payload;
@@ -392,21 +394,34 @@ const findOrCreateUser = async (data: {
   providerId: string;
   avatar?: string;
 }) => {
-  let user = await User.findOne({
-    provider: data.provider,
-    providerId: data.providerId,
-  });
-  const userData = {
-    fullName: data.name,
-    email: data.email,
-    role: "user",
-    provider: data.provider,
-    providerId: data.providerId,
-    profilePhoto: data.avatar,
-  };
+  // First, try to find an existing user by **email** – this catches accounts that were created via email/password
+  let user = await User.findOne({ email: data.email });
+
+  // If not found by email, fall back to the provider+providerId pair (OAuth accounts not yet linked)
   if (!user) {
-    user = await User.create(userData as any);
+    user = await User.findOne({
+      provider: data.provider,
+      providerId: data.providerId,
+    });
   }
+
+  // Only create a new user when we truly have no record for this e‑mail/provider
+  if (!user) {
+    const userData = {
+      fullName: data.name,
+      email: data.email,
+      role: "user",
+      provider: data.provider,
+      providerId: data.providerId,
+      profilePhoto: data.avatar,
+      // Generate a random password for OAuth‑only accounts (they will use Google/Apple to log in)
+      password: crypto.randomBytes(32).toString("hex"),
+    };
+    user = await User.create(userData as any);
+    console.log("new user : ", user);
+  }
+
+  console.log("final user : ", user);
 
   return user;
 };

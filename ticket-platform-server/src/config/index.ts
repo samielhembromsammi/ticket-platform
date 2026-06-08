@@ -18,7 +18,7 @@ export const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 export const AWS_REGION = process.env.AWS_REGION;
 export const AWS_BUCKET_NAME = process.env.AWS_BUCKET_NAME;
 
-export const WEB_HOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
+export const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL;
 export const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 export const STRIPE_PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY;
 export const CLIENT_URL = process.env.CLIENT_URL;

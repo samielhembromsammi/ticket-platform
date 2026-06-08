@@ -197,6 +197,24 @@ const successLogin = catchAsync(async (req: Request, res: Response) => {
     data: { token, user },
   });
 });
+
+const logoutUser = catchAsync(async (req: Request, res: Response) => {
+  res.clearCookie("token", {
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
+  });
+  res.clearCookie("refreshToken", {
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
+  });
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Logout successfully.",
+    data: null,
+  });
+});
+
 export const AuthController = {
   registerUser,
   loginUser,
@@ -208,4 +226,5 @@ export const AuthController = {
   changePassword,
   refreshToken,
   successLogin,
+  logoutUser,
 };
