@@ -327,6 +327,19 @@ export function useAuthService() {
     // Redirect to login
     router.push("/auth/login");
   }
+  const loginWithGoogle = useCallback(async () => {
+    try {
+      const response = await useApi.get("/auth/google");
+      const { data, status } = response;
+      if (status >= 400) {
+        return null;
+      }
+      return data?.data;
+    } catch (error) {
+      console.error("Get profile unexpected error:", error);
+      return null;
+    }
+  }, []);
 
-  return { register, login, forgotPassword, verifyOtp, verifyUserEmail, resetPassword, loading, logoutUser, resendOtp, getMe };
+  return { register, login, forgotPassword, verifyOtp, verifyUserEmail, resetPassword, loading, logoutUser, resendOtp, getMe, loginWithGoogle };
 }

@@ -2,6 +2,7 @@
 
 import { Input, Button, Form, Checkbox } from 'antd';
 import { FaUser, FaLock } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -9,6 +10,7 @@ import { useAuthService } from '@/src/hooks/auth';
 import { useAuthStore } from '@/src/store/authStore';
 import AuthLayout from '..';
 import { useState } from 'react';
+// import useApi from '@/src/hooks/use-api'; // removed – not needed
 
 export default function LoginPage() {
     const [remember, setRemember] = useState(false);
@@ -43,6 +45,12 @@ export default function LoginPage() {
         } catch (error) {
             console.error("Unexpected login error:", error);
         }
+    };
+
+    const handleGoogleLogin = () => {
+        const baseUrl = process.env.NEXT_PUBLIC_URI?.replace(/\/$/, "") ?? "";
+        // Navigate to backend OAuth endpoint without creating a new history entry
+        window.location.replace(`${baseUrl}/auth/google`);
     };
 
 
@@ -134,8 +142,11 @@ export default function LoginPage() {
                 <Button
                     size="large"
                     className="w-full !h-14 !rounded-xl !border-gray-800 text-gray-800 text-lg font-semibold hover:!border-black hover:!text-black bg-transparent"
+                    // onClick={handleGoogleLogin}
+
+                    icon={<FcGoogle style={{ fontSize: '1.5rem' }} />}
                 >
-                    Sign in with other
+                    Sign in with Google
                 </Button>
 
                 <div className="mt-8 text-center text-sm text-gray-500 font-medium">
